@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-14 19:32:52
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-14 21:54:57
+ * @LastEditTime: 2022-07-15 08:59:58
  * @Description: 文件双向链表，用来保存资源文件的名字
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 
@@ -10,6 +10,14 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<dirent.h>
+#include<errno.h>
+#include<sys/stat.h>
+#include<sys/types.h>
+#include<fcntl.h>
+#include<unistd.h>
+
+
 #include"filelist.h"
 
 
@@ -52,7 +60,8 @@ int filelist_Insertnode(Filelist* flist,char *name)
 /**
  * @Author: PengJL
  * @Description: 创建一个文件链表，
- * @return {*}
+ * @return {Filelist *} 
+ *                  返回创建的文件链表的指针
  */
 Filelist *create_flist()
 {
@@ -62,7 +71,18 @@ Filelist *create_flist()
     return flist;
 }
 
-char *flist_findnode(Filelist *flist, char *name)
+
+/**
+ * @Author: PengJL
+ * @Description: 从文件链表flist中查找
+ * 文件name的的完整文件名
+ * @param {Filelist} *flist: 文件链表的指针
+ * @param {char} *name: 需要查找的文件名
+ * @return {char *}
+ *              查找失败返回NULL
+ *              查找成功返回完整文件名的指针
+ */
+char *flist_findfile(Filelist *flist, char *name)
 {
     if(flist == NULL)
     {
@@ -79,7 +99,7 @@ char *flist_findnode(Filelist *flist, char *name)
             return NULL;
         }
 
-        if(strstr(fnode->name,name) == 0)
+        if(strstr(fnode->name,name))
         {
             return fnode->name;
         }
@@ -127,16 +147,18 @@ int findFile(Filelist* flist, char *dirname, char *file_postfix)
         }
         if(S_ISDIR(st.st_mode)) //当filename是目录文件时才进去查找
         {
-            number+=findmp3(filename);  
+
+            number+=findFile(flist,filename,file_postfix); //  
+
         }else if(S_ISREG(st.st_mode))  //当filename是普通文件时才判断它是否为file_postfix结尾的文件
         {
             int len = strlen(dir->d_name);
             char d[512];
             strcpy(d,dir->d_name);
-            if(len>4&&strcmp(dir->d_name+len-4,*file_postfix)==0) //当文件是以file_postfix结尾时,就将其加入链表中
+            if(len>4&&strcmp(dir->d_name+len-4,file_postfix)==0) //当文件是以file_postfix结尾时,就将其加入链表中
             {
                 number+=1;
-                //printf("%s\r\n",filename);
+                printf("%s\r\n",filename);
                 filelist_Insertnode(flist,filename);
             }
         }
