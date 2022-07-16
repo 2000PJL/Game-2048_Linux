@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "displaytext.h": "c",
+        "typeinfo": "c",
+        "lcdtouch.h": "c",
+        "game_logic.h": "c"
+    }
+}
