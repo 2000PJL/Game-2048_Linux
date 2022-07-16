@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-15 09:33:34
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-15 14:11:31
+ * @LastEditTime: 2022-07-16 15:25:27
  * @Description: 在LCD屏幕上通过点阵字库方式
  * 显示需要显示的文字
  * 
@@ -23,7 +23,7 @@
  * @param {int} height: 字符的高度
  * @return {*} 无返回值
  */
-void display_text(const char word[], int x0, int y0, int width, int height);
+void display_text(const char word[], int x0, int y0, int width, int height, char pa);
 
 
 /**
@@ -49,6 +49,16 @@ void display_int(int number, int x0, int y0);
  * @return {*}  无返回值
  */
 void display_double(double num, int x0, int y0);
+
+/**
+ * @Author: PengJL
+ * @Description: 显示分数的标题栏,大约需要 93 * 39 的区域
+ * @param {int} x0: x轴坐标
+ * @param {int} y0: y轴坐标
+ * @return {*}
+ */
+void display_score(int x0, int y0);
+
 
 
 #endif

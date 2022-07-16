@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-15 19:09:08
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-15 19:27:12
+ * @LastEditTime: 2022-07-16 16:14:56
  * @Description: 调用官方的jpeg库去操作jpg图片
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 
@@ -10,6 +10,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<errno.h>
+#include<unistd.h>
+
 
 #include"jpeglib.h"
 #include"jpeg.h"
@@ -82,6 +84,9 @@ void display_jpg(char *fname, int x0, int y0)
     // 被jpeg_read_scanlines()读入到存储空间中，紧接着是第二行扫描线，最后是
     // 图像底边的扫描线被读入到存储空间中去。		
     //dinfo.output_scanline   表示的意思是已经扫描了多少行
+    unsigned int colors[dinfo.output_height][dinfo.output_width];
+
+    
     while(dinfo.output_scanline<dinfo.output_height)
     {
         //一次从dinfo中读取一行像素放到buffer中去
@@ -89,7 +94,7 @@ void display_jpg(char *fname, int x0, int y0)
         int i = 0;
         for (int x = 0; x < dinfo.output_width; x++)
         {
-            unsigned char a = 0, r,g, b;
+            unsigned char a = 0, r, g, b;
             int color;
             if (dinfo.output_components == 3)
             {
@@ -105,11 +110,31 @@ void display_jpg(char *fname, int x0, int y0)
                 g = buffer[i++];
                 b = buffer[i++];
             }
+            
             color = (a << 24) | (r << 16) | (g << 8) | b;
-            lcd_draw_point(x0 + x, y0 + dinfo.output_scanline - 1, color);
+            colors[dinfo.output_scanline - 1][x] = color;
+            //lcd_draw_point(x0 + x, y0 + dinfo.output_scanline - 1, color);
         }
     }
 
+    int width = dinfo.output_width;
+    int height = dinfo.output_height;
+
+    printf("test\n");
+    
+    
+    for(int y1 = 0,y2 = height-1; y1 <= y2; y1++,y2--)
+    {
+        for(int x1 = 0,x2 = width-1; x1 <= x2 ; x1++,x2--)
+        {
+            lcd_draw_point(x0 + x1, y0 + y1, colors[y1][x1]);
+            lcd_draw_point(x0 + x1, y0 + y2, colors[y2][x1]);
+            lcd_draw_point(x0 + x2, y0 + y1, colors[y1][x2]);
+            lcd_draw_point(x0 + x2, y0 + y2, colors[y2][x2]);
+
+        }
+        usleep(500);
+    }
 			
     //调用jpeg_finish_decompress()完成解压过程
     jpeg_finish_decompress(&dinfo);

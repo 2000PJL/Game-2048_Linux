@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-14 19:32:52
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-15 08:59:58
+ * @LastEditTime: 2022-07-16 10:35:52
  * @Description: 文件双向链表，用来保存资源文件的名字
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 
@@ -166,3 +166,109 @@ int findFile(Filelist* flist, char *dirname, char *file_postfix)
     closedir(dp);
     return number;
 }
+
+
+
+/**
+ * @Author: PengJL
+ * @Description: 查找文件列表中fnode的下一个节点
+ * @param {Filenode} *fnode: 文件链表节点的指针
+ * @return {Filenode *}
+ *              查找失败返回原节点的地址
+ *              查找成功返回下一个节点的地址
+ */
+Filenode *flist_nextnode(Filelist* flist, Filenode* fnode)
+{
+    if(fnode->next == NULL)
+    {
+        printf("文件链表已到尾部!\n");
+        return flist->first; 
+    }
+
+    return fnode->next;
+}
+
+/**
+ * @Author: PengJL
+ * @Description: 查找文件列表中fnode的上一个节点
+ * @param {Filenode} *fnode: 文件链表节点的指针
+ * @return {Filenode *}
+ *              查找失败返回原节点的地址
+ *              查找成功返回上一个节点的地址
+ */
+Filenode *flist_prenode(Filelist* flist, Filenode* fnode)
+{
+    if(fnode->pre == NULL)
+    {
+        printf("文件链表已到头部!\n");
+        return flist->last; 
+    }
+
+    return fnode->pre;
+}
+
+
+
+
+/**
+ * @Author: PengJL
+ * @Description: 从文件链表flist中查找
+ * 文件name的的完整文件名
+ * @param {Filelist} *flist: 文件链表的指针
+ * @param {char} *name: 需要查找的文件名
+ * @return {char *}
+ *              查找失败返回NULL
+ *              查找成功返回完整文件名的指针
+ */
+int flist_findnode(Filelist *flist, Filenode *fnode)
+{
+    if(flist == NULL)
+    {
+        printf("文件链表中没有节点，或没有找到相应资源\n");
+        return -1;
+    }
+
+    if(flist->first == flist->last)
+    {
+        if(strstr(flist->first->name,fnode->name))
+        {
+            fnode = flist->first;
+            return 1;
+        }else{
+            printf("没有找到%s\n",fnode->name);
+            return -1;
+        }
+    }
+    
+    Filenode *fnode1 = (Filenode *)malloc(sizeof(Filenode));
+
+    
+    fnode1 = flist->first->next;
+
+    while (1)
+    {
+        if(fnode1 == flist->last)
+        {
+            fnode1 = flist->first;
+            if(strstr(fnode1->name,fnode->name))
+            {
+                //free(*fnode);
+                fnode = fnode1;
+                return 1;
+            }else{
+                printf("没有找到%s\n",fnode->name);
+                return -1;
+            }
+        }
+
+        if(strstr(fnode1->name,fnode->name))
+        {
+            //free(*fnode);
+            fnode = fnode1;
+            return 1;
+        }else{
+            fnode1 = fnode1->next;
+        }
+    }   
+}
+
