@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-14 11:14:48
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-16 20:49:18
+ * @LastEditTime: 2022-07-19 18:30:01
  * @Description: 本文件是2048游戏的主文件，
  * 在该文件中实现2048这款游戏的主要控制逻辑
  * 
@@ -29,7 +29,8 @@
 
 
 
-
+pthread_t th_listen_touch; //触摸屏监控线程
+pthread_t th_main;
 
 
 
@@ -39,8 +40,6 @@ int main()
     Filelist* image_flist = NULL;
     image_flist = create_flist();
 
-    int touch_event = 0;
-    Touch_point* touch_point = (Touch_point *)malloc(sizeof(Touch_point));
 
 
     if(findFile(image_flist,"../",".jpg")>0)
@@ -48,27 +47,31 @@ int main()
         printf("查找jpg图片成功\n");
     }else{
         printf("查找jpg图片失败\n");
+        return 0;
     }
-
-    Param param1;
-    param1.touch_point = touch_point;
-    param1.touch_event = touch_event;
-
-    pthread_t th1;
-    int ret = pthread_create(&th1,NULL,(void *)listen_touch_thread,&param1); 
-    if(ret != 0)
-    {
-        printf("Create pthread error!\n");
-        exit(1);
-    }
-    pthread_join(th1,NULL);
 
     lcd_open();
-
     mainpage_init(image_flist);
-    sleep(1);
-    gamepage_init(image_flist);
+    
+       
+    int ret = pthread_create(&th_listen_touch,NULL,listen_touch_thread,NULL); 
+    if(ret != 0)
+    {
+        printf("Create pthread1 error!\n");
+        exit(1);
+    }
 
+
+    ret = pthread_create(&th_main,NULL,game_logic_thread,image_flist);
+
+    if(ret != 0)
+    {
+        printf("Create pthread2 error!\n");
+        exit(1);
+    }
+    
+    pthread_join(th_main,NULL);
+  
     lcd_close();
     return 0;
 }

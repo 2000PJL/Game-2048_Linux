@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-14 08:56:12
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-16 16:47:46
+ * @LastEditTime: 2022-07-18 21:36:54
  * @Description: 
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 
@@ -216,10 +216,19 @@ int get_touch(Touch_point *pot)
         {
             int delt_x = abs(x2 - x1);
             int delt_y = abs(y2 - y1);
+            x1 = x1 * 800.0 / 1024;
+            x2 = x2 * 800.0 / 1024;
+
+            y1 = y1 * 480.0 / 600;
+            y2 = y2 * 480.0 / 600;
+            
+            //printf("x1 = %d,y1 = %d, x2 = %d, y2 =%d\n",x1,y2,x2,y2);
 
             //如果松手时的坐标与点击时的坐标差值在30个像素点以内，就认为是点击事件
-            if(delt_x * delt_x + delt_y * delt_y > 900)
+            if(delt_x * delt_x + delt_y * delt_y < 900)
             {
+                pot->x = x2;
+                pot->y = y2;
                 return 5;
             }
 

@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-15 19:09:08
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-16 16:14:56
+ * @LastEditTime: 2022-07-20 08:42:39
  * @Description: 调用官方的jpeg库去操作jpg图片
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 
@@ -76,7 +76,7 @@ void display_jpg(char *fname, int x0, int y0)
     // >  在调用完jpeg_start_decompress()后，往往需要为解压后的扫描线上所有的像素点分配空间
     // >  存一行：	malloc(dinfo.output_width * dinfo.output_components);	jpeg_start_decompress(&dinfo);
 
-    printf("the resolution of jpg is %d * %d\n", dinfo.output_width, dinfo.output_height);
+    //printf("the resolution of jpg is %d * %d\n", dinfo.output_width, dinfo.output_height);
 
     unsigned char * buffer = (unsigned char*) malloc( dinfo.output_width * dinfo.output_components);
     // - (6)读取一行或者多行扫描线上数据处理通常是这样的
@@ -120,7 +120,6 @@ void display_jpg(char *fname, int x0, int y0)
     int width = dinfo.output_width;
     int height = dinfo.output_height;
 
-    printf("test\n");
     
     
     for(int y1 = 0,y2 = height-1; y1 <= y2; y1++,y2--)
@@ -133,7 +132,7 @@ void display_jpg(char *fname, int x0, int y0)
             lcd_draw_point(x0 + x2, y0 + y2, colors[y2][x2]);
 
         }
-        usleep(500);
+        usleep(100);
     }
 			
     //调用jpeg_finish_decompress()完成解压过程
