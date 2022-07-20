@@ -132,7 +132,7 @@ void display_jpg(char *fname, int x0, int y0)
             lcd_draw_point(x0 + x2, y0 + y2, colors[y2][x2]);
 
         }
-        usleep(100);
+        //usleep(10);
     }
 			
     //调用jpeg_finish_decompress()完成解压过程

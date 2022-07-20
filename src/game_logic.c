@@ -43,9 +43,9 @@ void mainpage_init(Filelist *image_flist)
 
 void gamepage_init(Filelist *flist)
 {
+    game_score = 0;
     display_jpg(flist_findfile(flist,"backgroud.jpg"),0,0);
     lcd_draw_rectangle(0, 0, 460, 480, 0xBBADA2);
-    //display_jpg(flist_findfile(flist,""));
     for(int i = 0; i < 4; i++)
     {
         for(int j = 0; j < 4; j++)
@@ -126,6 +126,7 @@ void *game_logic_thread(void *arg)
                 move_program(image_flsit);
                 random_program();
                 refresh_view(image_flsit);
+                gameIsWin(image_flsit);
                 break;
         }
         touch_event = 0;
@@ -250,57 +251,75 @@ void move_program(Filelist* flist)
             for(int i = 0; i < 4; i++)
             {
                 for(int j = 0; j < 3; j++)
-                //for(int j = 3; j >= 0; j--)
                 {
-                    if(matrix[j][i] == matrix[j+1][i] != 0)
+                    int next = -1;
+                    for(int k = j+1; k < 4 ; k++)
                     {
-                        game_score +=matrix[j][i];
-                        matrix[j][i] = matrix[j][i] * 2;
-                        matrix[j+1][i] = 0;
+                        if(matrix[k][i] != 0)
+                        {
+                            next = k;
+                            break;
+                        }
                     }
-                    if(j < 2 && matrix[j][i] == matrix[j+2][i] != 0 && matrix[j+1][i] == 0 )
+                    if(next != -1)
                     {
-                        game_score +=matrix[j][i];
-                        matrix[j][i] = matrix[j][i] * 2;
-                        matrix[j+2][i] = 0;
-                    }
-                    if(j == 0 && matrix[j][i] == matrix[j+3][i] != 0 && matrix[j+1][i] == 0 && matrix[j+2][i] == 0)
-                    {
-                        game_score +=matrix[j][i];
-                        matrix[j][i] = matrix[j][i] * 2;
-                        matrix[j+3][i] = 0;
+                        if(matrix[j][i]==0)
+                        {
+                            matrix[j][i] = matrix[next][i];
+                            matrix[next][i] = 0;
+                        }else if(matrix[j][i] == matrix[next][i]){
+                            game_score += matrix[j][i];
+                            matrix[j][i] *= 2;
+                            matrix[next][i] = 0;
+                        }
+                    }else{
+                        break;
                     }
 
-                    if(matrix_view[j][i] == 1024)
-                    {
-                        game_win(flist);
-                    }
+                    
                 }
             }
 
-            for(int i = 0; i < 4; i++)
-            {
-                //for(int j = 0; j < 3; j++)
-                for(int j = 2; j >= 0; j--)
-                {
-                    if(j < 2 && matrix[j][i] == matrix[j+1][i] == 0 && matrix[j+2][i] != 0)
-                    {
-                        matrix[j][i] = matrix[j+2][i];
-                        matrix[j+2][i] = 0;
-                    }
-                    if(j == 0 && matrix[j][i] == matrix[j+1][i] == matrix[j+2][i] == 0 && matrix[j+3][i] != 0)
-                    {
-                        matrix[j][i] = matrix[j+3][i];
-                        matrix[j+3][i] = 0;
-                    }
-                    if(matrix[j][i] == 0 && matrix[j+1][i] != 0)
-                    {
+
+            // for(int i = 0; i < 4; i++)
+            // {
+            //     for(int m = 0; m < 3; m++)
+            //     {
+            //         if(matrix[m][i] == 0)
+            //         {
+            //             continue;
+            //         }
+            //         for(int j = m - 1; j < 3; j++)
+            //         {
+            //             int next = -1;
+            //             for(int k = j+1; k < 4 ; k++)
+            //             {
+            //                 if(matrix[k][i] != 0)
+            //                 {
+            //                     next = k;
+            //                     break;
+            //                 }
+            //             }
+            //             if(next != -1)
+            //             {
+            //                 if(matrix[m][i]==0)
+            //                 {
+            //                     matrix[m][i] = matrix[next][i];
+            //                     matrix[next][i] = 0;
+            //                 }else if(matrix[j][i] == matrix[next][i]){
+            //                     game_score += matrix[j][i];
+            //                     matrix[m][i] = matrix[j][i] * 2;
+            //                     matrix[j][i] = 0;
+            //                     matrix[next][i] = 0;
+            //                 }
+            //             }else{
+            //                 break;
+            //             }
+
                         
-                        matrix[j][i] = matrix[j+1][i];
-                        matrix[j+1][i] = 0;
-                    }
-                }
-            }
+            //         }
+            //     }
+            //}
 
         }
         break;
@@ -310,55 +329,72 @@ void move_program(Filelist* flist)
             {
                 for(int j = 3; j > 0; j--)
                 {
-                    if(matrix[j][i] == matrix[j-1][i] != 0)
+                    int next = -1;
+                    for(int k = j-1; k >= 0; k--)
                     {
-                        game_score +=matrix[j][i];
-                        matrix[j][i] = matrix[j][i] * 2;
-                        matrix[j-1][i] = 0;
+                        if(matrix[k][i] != 0)
+                        {
+                            next = k;
+                            break;
+                        }
                     }
-                    if(j >= 2 && matrix[j][i] == matrix[j-2][i] != 0 && matrix[j-1][i] == 0 )
+                    if(next != -1)
                     {
-                        game_score +=matrix[j][i];
-                        matrix[j][i] = matrix[j][i] * 2;
-                        matrix[j-2][i] = 0;
-                    }
-                    if(j == 3 && matrix[j][i] == matrix[j-3][i] != 0 && matrix[j-1][i] == 0 && matrix[j-2][i] == 0 )
-                    {
-                        game_score +=matrix[j][i];
-                        matrix[j][i] = matrix[j][i] * 2;
-                        matrix[j-3][i] = 0;
+                        if(matrix[j][i]==0)
+                        {
+                            matrix[j][i] = matrix[next][i];
+                            matrix[next][i] = 0;
+                        }else if(matrix[j][i] == matrix[next][i]){
+                            game_score += matrix[j][i];
+                            matrix[j][i] *= 2;
+                            matrix[next][i] = 0;
+                        }
+                    }else{
+                        break;
                     }
 
-                    if(matrix_view[j][i] == 1024)
-                    {
-                        game_win(flist);
-                    }
                 }
             }
 
-            for(int i = 0; i < 4; i++)
-            {
-                //for(int j = 3; j > 0; j--)
-                for(int j = 1; j <= 3; j++)
-                {
-                    
-                    if(j >= 2 &&matrix[j][i] == matrix[j-1][i] == 0 && matrix[j-2][i] != 0)
-                    {
-                        matrix[j][i] = matrix[j-2][i];
-                        matrix[j-2][i] = 0;
-                    }
-                    if(j == 3 && matrix[j][i] == matrix[j-1][i] == matrix[j-2][i] == 0 && matrix[j-3][i] != 0)
-                    {
-                        matrix[j][i] = matrix[j-3][i];
-                        matrix[j-3][i] = 0;
-                    }
-                    if(matrix[j][i] == 0 && matrix[j-1][i] != 0)
-                    {
-                        matrix[j][i] = matrix[j-1][i];
-                        matrix[j-1][i] = 0;
-                    }
-                }
-            }
+
+            //  for(int i = 0; i < 4; i++)
+            // {
+            //     for(int m = 3; m > 0; m--)
+            //     {
+            //         if(matrix[m][i] == 0)
+            //         {
+            //             continue;
+            //         }
+            //         for(int j = m + 1; j > 0; j--)
+            //         {
+            //             int next = -1;
+            //             for(int k = j-1; k >= 0; k--)
+            //             {
+            //                 if(matrix[k][i] != 0)
+            //                 {
+            //                     next = k;
+            //                     break;
+            //                 }
+            //             }
+            //             if(next != -1)
+            //             {
+            //                 if(matrix[m][i]==0)
+            //                 {
+            //                     matrix[m][i] = matrix[next][i];
+            //                     matrix[next][i] = 0;
+            //                 }else if(matrix[j][i] == matrix[next][i]){
+            //                     game_score += matrix[j][i];
+            //                     matrix[m][i] = matrix[j][i] * 2;
+            //                     matrix[j][i] = 0;
+            //                     matrix[next][i] = 0;
+            //                 }
+            //             }else{
+            //                 break;
+            //             }
+
+            //         }
+            //     }
+            // }
 
         }
         break;
@@ -369,59 +405,73 @@ void move_program(Filelist* flist)
             {
                 for(int j = 0; j < 3; j++)
                 {
-                    if(matrix[i][j] == matrix[i][j+1] != 0)
+                    int next = -1;
+                    for(int k = j+1; k < 4; k++)
                     {
-                        game_score +=matrix[i][j];
-                        matrix[i][j] = matrix[i][j] * 2;
-                        matrix[i][j+1] = 0;
+                        if(matrix[i][k] != 0)
+                        {
+                            next = k;
+                            break;
+                        }
                     }
-                    if(j < 2 && matrix[i][j] == matrix[i][j+2] != 0 && matrix[i][j+1] == 0 )
+                    if(next != -1)
                     {
-                        game_score +=matrix[i][j];
-                        matrix[i][j] = matrix[i][j] * 2;
-                        matrix[i][j+2] = 0;
-                    }
-                    if(j == 0  && matrix[i][j] == matrix[i][j+3] != 0 && matrix[i][j+1] == 0 && matrix[i][j+2] == 0 )
-                    {
-                        game_score +=matrix[i][j];
-                        matrix[i][j] = matrix[i][j] * 2;
-                        matrix[i][j+3] = 0;
-                    }
-
-                    if(matrix_view[i][j] == 1024)
-                    {
-                        game_win(flist);
+                        if(matrix[i][j]==0)
+                        {
+                            matrix[i][j] = matrix[i][next];
+                            matrix[i][next] = 0;
+                        }else if(matrix[i][j] == matrix[i][next]){
+                            game_score += matrix[i][j];
+                            matrix[i][j] *= 2;
+                            matrix[i][next] = 0;
+                        }
+                    }else{
+                        break;
                     }
                 }
             }
 
-            for(int i = 0; i < 4; i++)
-            {
-                //for(int j = 0; j < 3; j++)
-                for(int j = 2; j >= 0; j--)
-                {
-                    
-                    if(j < 2 &&matrix[i][j] == matrix[i][j+1] == 0 && matrix[i][j+2] != 0)
-                    {
-                        matrix[i][j] = matrix[i][j+2];
-                        matrix[i][j+2] = 0;
-                    }
-                    if(j == 0 && matrix[i][j] == matrix[i][j+1] == matrix[i][j+2] == 0 && matrix[i][j+3] != 0)
-                    {
-                        matrix[i][j] = matrix[i][j+3];
-                        matrix[i][j+3] = 0;
-                    }
-                    if(matrix[i][j] == 0 && matrix[j+1][i] != 0)
-                    {
-                        matrix[i][j] = matrix[i][j+1];
-                        matrix[i][j+1] = 0;
-                    }
 
-                }
-            }
+            // for(int i = 0; i < 4; i++)
+            // {
+            //     for(int m = 0; m < 3; m++)
+            //     {
+            //         if(matrix[i][m] == 0)
+            //         {
+            //             continue;
+            //         }
+            //         for(int j = m - 1; j < 3; j++)
+            //         {
+            //             int next = -1;
+            //             for(int k = j+1; k < 4; k++)
+            //             {
+            //                 if(matrix[i][k] != 0)
+            //                 {
+            //                     next = k;
+            //                     break;
+            //                 }
+            //             }
+            //             if(next != -1)
+            //             {
+            //                 if(matrix[i][m]==0)
+            //                 {
+            //                     matrix[i][m] = matrix[i][next];
+            //                     matrix[i][next] = 0;
+            //                 }else if(matrix[i][j] == matrix[i][next]){
+            //                     game_score += matrix[i][j];
+            //                     matrix[i][m] = matrix[i][j] * 2;
+            //                     matrix[i][j] = 0;
+            //                     matrix[i][next] = 0;
+            //                 }
+            //             }else{
+            //                 break;
+            //             }
+            //         }
+            //     }
+            // }
 
+            break;
         }
-        break;
 
     case 4: //右划事件处理
     {
@@ -429,53 +479,72 @@ void move_program(Filelist* flist)
             {
                 for(int j = 3; j > 0; j--)
                 {
-                    if(matrix[i][j] == matrix[i][j-1] != 0)
+                    int next = -1;
+                    for(int k = j-1; k >= 0; k--)
                     {
-                        game_score +=matrix[i][j];
-                        matrix[i][j] = matrix[i][j] * 2;
-                        matrix[i][j-1] = 0;
+                        if(matrix[i][k] != 0)
+                        {
+                            next = k;
+                            break;
+                        }
                     }
-                    if(j >= 2 && matrix[i][j] == matrix[i][j-2] != 0 && matrix[i][j-1] == 0 )
+                    if(next != -1)
                     {
-                        game_score +=matrix[i][j];
-                        matrix[i][j] = matrix[i][j] * 2;
-                        matrix[i][j-2] = 0;
+                        if(matrix[i][j]==0)
+                        {
+                            matrix[i][j] = matrix[i][next];
+                            matrix[i][next] = 0;
+                        }else if(matrix[i][j] == matrix[i][next]){
+                            game_score += matrix[i][j];
+                            matrix[i][j] *= 2;
+                            matrix[i][next] = 0;
+                        }
+                    }else{
+                        break;
                     }
-                    if(j == 3  && matrix[i][j] == matrix[i][j-3] != 0 && matrix[i][j-1] == 0 && matrix[i][j-2] == 0 )
-                    {
-                        game_score +=matrix[i][j];
-                        matrix[i][j] = matrix[i][j] * 2;
-                        matrix[i][j-3] = 0;
-                    }
-                    if(matrix_view[i][j] == 1024)
-                    {
-                        game_win(flist);
-                    }
+
                 }
             }
 
-            for(int i = 0; i < 4; i++)
-            {
-                //for(int j = 3; j >= 0; j--)
-                for(int j = 1; j <= 3; j++)
-                {
-                    if(j >= 2 &&matrix[i][j] == matrix[i][j-1] == 0 && matrix[i][j-2] != 0)
-                    {
-                        matrix[i][j] = matrix[i][j-2];
-                        matrix[i][j-2] = 0;
-                    }
-                    if(j == 3 && matrix[i][j] == matrix[i][j-1] == matrix[i][j-2] == 0 && matrix[i][j-3] != 0)
-                    {
-                        matrix[i][j] = matrix[i][j-3];
-                        matrix[i][j-3] = 0;
-                    }
-                    if(matrix[i][j] == 0 && matrix[i][j-1] != 0)
-                    {
-                        matrix[i][j] = matrix[i][j-1];
-                        matrix[i][j-1] = 0;
-                    }
-                }
-            }
+
+            // for(int i = 0; i < 4; i++)
+            // {
+            //     for(int m = 3; m > 0; m--)
+            //     {
+            //         if(matrix[i][m] == 0)
+            //         {
+            //             continue;
+            //         }
+            //         for(int j = m + 1; j > 0; j--)
+            //         {
+            //             int next = -1;
+            //             for(int k = j-1; k >= 0; k--)
+            //             {
+            //                 if(matrix[i][k] != 0)
+            //                 {
+            //                     next = k;
+            //                     break;
+            //                 }
+            //             }
+            //             if(next != -1)
+            //             {
+            //                 if(matrix[i][m]==0)
+            //                 {
+            //                     matrix[i][m] = matrix[i][next];
+            //                     matrix[i][next] = 0;
+            //                 }else if(matrix[i][j] == matrix[i][next]){
+            //                     game_score += matrix[i][j];
+            //                     matrix[i][m] = matrix[i][j] * 2;
+            //                     matrix[i][j] = 0;
+            //                     matrix[i][next] = 0;
+            //                 }
+            //             }else{
+            //                 break;
+            //             }
+
+            //         }
+            //     }
+            // }
 
         }
         break;
@@ -619,17 +688,35 @@ int judge_NotMove()
         {
             for(int j = 0; j < 3; j++)
             {
-                //printf("%d ",matrix[i][j]);
                 if(matrix[i][j] == matrix[i][j+1] || matrix[j][i] == matrix[j+1][i])
                 {
                     judge = 0;
                     return judge;
                 }
             }
-            //printf("\n");
         }
     }else{
         judge = 0;
     }
     return judge;
+}
+
+/**
+ * @Author: PengJL
+ * @Description: 判断是否出现了2048，
+ *  出现了就终止所有线程
+ * @return {*}
+ */
+void gameIsWin(Filelist *flist)
+{
+    for(int i = 0; i < 4; i++)
+    {
+        for(int j = 0; j < 4; j++)
+        {
+            if(matrix_view[j][i] == 2048)
+            {
+                game_win(flist);
+            }
+        }
+    }       
 }

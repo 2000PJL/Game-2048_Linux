@@ -113,4 +113,12 @@ void game_over(Filelist* flist);
 int judge_NotMove();
 
 
+/**
+ * @Author: PengJL
+ * @Description: 判断是否出现了2048，
+ *  出现了就终止所有线程
+ * @return {*}
+ */
+void gameIsWin(Filelist *flist);
+
 #endif
