@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-14 11:14:48
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-19 18:30:01
+ * @LastEditTime: 2022-07-21 19:09:11
  * @Description: 本文件是2048游戏的主文件，
  * 在该文件中实现2048这款游戏的主要控制逻辑
  * 
@@ -31,22 +31,35 @@
 
 pthread_t th_listen_touch; //触摸屏监控线程
 pthread_t th_main;
-
+pthread_t th_mp3;
 
 
 int main()
 {
 
+    //创建jpg图片文件链表
     Filelist* image_flist = NULL;
     image_flist = create_flist();
+    int ret = findFile(image_flist,"../",".jpg");
 
-
-
-    if(findFile(image_flist,"../",".jpg")>0)
+    if(ret > 0)
     {
-        printf("查找jpg图片成功\n");
+        printf("查找到%d个jpg文件\n", ret);
     }else{
-        printf("查找jpg图片失败\n");
+        printf("未找到jpg文件\n");
+        return 0;
+    }
+
+    //创建mp3音频文件链表
+    Filelist* mp3_flist = NULL;
+    mp3_flist = create_flist();
+    int ret1 = findFile(mp3_flist,"../",".mp3");
+    
+    if(ret1 > 0)
+    {
+        printf("查找到%d个mp3文件\n", ret1);
+    }else{
+        printf("未找到mp3文件\n");
         return 0;
     }
 
@@ -54,19 +67,25 @@ int main()
     mainpage_init(image_flist);
     
        
-    int ret = pthread_create(&th_listen_touch,NULL,listen_touch_thread,NULL); 
-    if(ret != 0)
+    int ret_t = pthread_create(&th_listen_touch,NULL,listen_touch_thread,NULL); 
+    if(ret_t != 0)
     {
-        printf("Create pthread1 error!\n");
+        printf("Failed to create listen_touch_thread\n");
         exit(1);
     }
 
 
-    ret = pthread_create(&th_main,NULL,game_logic_thread,image_flist);
-
-    if(ret != 0)
+    ret_t = pthread_create(&th_main,NULL,game_logic_thread,image_flist);
+    if(ret_t != 0)
     {
-        printf("Create pthread2 error!\n");
+        printf("Failed to create game_logic_thread\n");
+        exit(1);
+    }
+
+    ret_t = pthread_create(&th_mp3,NULL,mp3_play_thread,mp3_flist);
+    if(ret_t != 0)
+    {
+        printf("Failed to create mp3_play_thread\n");
         exit(1);
     }
     

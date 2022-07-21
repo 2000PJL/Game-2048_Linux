@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-15 20:37:56
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-20 09:44:33
+ * @LastEditTime: 2022-07-21 20:07:41
  * @Description: 游戏主体逻辑
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 
@@ -12,7 +12,8 @@
 #include<pthread.h>
 #include<unistd.h>
 #include<time.h>
-
+#include<string.h>
+#include <sys/wait.h>
 
 #include"lcd.h"
 #include"displaytext.h"
@@ -135,7 +136,28 @@ void *game_logic_thread(void *arg)
 }
 
 
+/**
+ * @Author: PengJL
+ * @Description: 后台播放指定背景音乐
+ * @param {void} *argv: 文件链表指针
+ * @return {*}
+ */
+void *mp3_play_thread(void *arg)
+{
+    Filelist *mp3_flist = arg;
+    char *mp3_name =NULL;
+    mp3_name = flist_findfile(mp3_flist,"Glorious-days_Beyond.mp3");
 
+
+    while(1)
+    {
+        char cmd[512];
+        sprintf(cmd,"madplay -Q -a -30 -S %s",mp3_name);
+        printf("mp3_play_thread: %s\n",cmd);
+        system(cmd);
+        sleep(1);
+    }
+}
 
 
 
@@ -720,3 +742,8 @@ void gameIsWin(Filelist *flist)
         }
     }       
 }
+
+
+
+
+

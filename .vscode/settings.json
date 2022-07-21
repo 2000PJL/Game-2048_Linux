@@ -4,6 +4,7 @@
         "typeinfo": "c",
         "lcdtouch.h": "c",
         "game_logic.h": "c",
-        "bmp.h": "c"
+        "bmp.h": "c",
+        "stdlib.h": "c"
     }
 }

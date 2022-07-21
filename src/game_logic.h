@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-15 20:36:04
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-20 08:56:58
+ * @LastEditTime: 2022-07-21 18:40:16
  * @Description: 2048游戏主体逻辑的相关函数声明
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 
@@ -32,6 +32,13 @@ void *listen_touch_thread(void *arg);
  */
 void *game_logic_thread(void *arg);
 
+/**
+ * @Author: PengJL
+ * @Description: 后台播放指定背景音乐
+ * @param {void} *argv: 文件链表指针
+ * @return {*}
+ */
+void *mp3_play_thread(void *arg);
 
 /**
  * @Author: PengJL
@@ -120,5 +127,7 @@ int judge_NotMove();
  * @return {*}
  */
 void gameIsWin(Filelist *flist);
+
+
 
 #endif
