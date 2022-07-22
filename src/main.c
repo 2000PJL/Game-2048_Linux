@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-14 11:14:48
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-21 19:09:11
+ * @LastEditTime: 2022-07-22 15:33:45
  * @Description: 本文件是2048游戏的主文件，
  * 在该文件中实现2048这款游戏的主要控制逻辑
  * 
@@ -90,7 +90,8 @@ int main()
     }
     
     pthread_join(th_main,NULL);
-  
+    system("killall madplay");
     lcd_close();
+
     return 0;
 }

@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-15 20:37:56
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-21 20:07:41
+ * @LastEditTime: 2022-07-22 15:35:28
  * @Description: 游戏主体逻辑
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 
@@ -147,7 +147,6 @@ void *mp3_play_thread(void *arg)
     Filelist *mp3_flist = arg;
     char *mp3_name =NULL;
     mp3_name = flist_findfile(mp3_flist,"Glorious-days_Beyond.mp3");
-
 
     while(1)
     {
@@ -303,46 +302,6 @@ void move_program(Filelist* flist)
             }
 
 
-            // for(int i = 0; i < 4; i++)
-            // {
-            //     for(int m = 0; m < 3; m++)
-            //     {
-            //         if(matrix[m][i] == 0)
-            //         {
-            //             continue;
-            //         }
-            //         for(int j = m - 1; j < 3; j++)
-            //         {
-            //             int next = -1;
-            //             for(int k = j+1; k < 4 ; k++)
-            //             {
-            //                 if(matrix[k][i] != 0)
-            //                 {
-            //                     next = k;
-            //                     break;
-            //                 }
-            //             }
-            //             if(next != -1)
-            //             {
-            //                 if(matrix[m][i]==0)
-            //                 {
-            //                     matrix[m][i] = matrix[next][i];
-            //                     matrix[next][i] = 0;
-            //                 }else if(matrix[j][i] == matrix[next][i]){
-            //                     game_score += matrix[j][i];
-            //                     matrix[m][i] = matrix[j][i] * 2;
-            //                     matrix[j][i] = 0;
-            //                     matrix[next][i] = 0;
-            //                 }
-            //             }else{
-            //                 break;
-            //             }
-
-                        
-            //         }
-            //     }
-            //}
-
         }
         break;
     case 2: //下滑事件处理
@@ -377,46 +336,6 @@ void move_program(Filelist* flist)
 
                 }
             }
-
-
-            //  for(int i = 0; i < 4; i++)
-            // {
-            //     for(int m = 3; m > 0; m--)
-            //     {
-            //         if(matrix[m][i] == 0)
-            //         {
-            //             continue;
-            //         }
-            //         for(int j = m + 1; j > 0; j--)
-            //         {
-            //             int next = -1;
-            //             for(int k = j-1; k >= 0; k--)
-            //             {
-            //                 if(matrix[k][i] != 0)
-            //                 {
-            //                     next = k;
-            //                     break;
-            //                 }
-            //             }
-            //             if(next != -1)
-            //             {
-            //                 if(matrix[m][i]==0)
-            //                 {
-            //                     matrix[m][i] = matrix[next][i];
-            //                     matrix[next][i] = 0;
-            //                 }else if(matrix[j][i] == matrix[next][i]){
-            //                     game_score += matrix[j][i];
-            //                     matrix[m][i] = matrix[j][i] * 2;
-            //                     matrix[j][i] = 0;
-            //                     matrix[next][i] = 0;
-            //                 }
-            //             }else{
-            //                 break;
-            //             }
-
-            //         }
-            //     }
-            // }
 
         }
         break;
@@ -454,44 +373,6 @@ void move_program(Filelist* flist)
             }
 
 
-            // for(int i = 0; i < 4; i++)
-            // {
-            //     for(int m = 0; m < 3; m++)
-            //     {
-            //         if(matrix[i][m] == 0)
-            //         {
-            //             continue;
-            //         }
-            //         for(int j = m - 1; j < 3; j++)
-            //         {
-            //             int next = -1;
-            //             for(int k = j+1; k < 4; k++)
-            //             {
-            //                 if(matrix[i][k] != 0)
-            //                 {
-            //                     next = k;
-            //                     break;
-            //                 }
-            //             }
-            //             if(next != -1)
-            //             {
-            //                 if(matrix[i][m]==0)
-            //                 {
-            //                     matrix[i][m] = matrix[i][next];
-            //                     matrix[i][next] = 0;
-            //                 }else if(matrix[i][j] == matrix[i][next]){
-            //                     game_score += matrix[i][j];
-            //                     matrix[i][m] = matrix[i][j] * 2;
-            //                     matrix[i][j] = 0;
-            //                     matrix[i][next] = 0;
-            //                 }
-            //             }else{
-            //                 break;
-            //             }
-            //         }
-            //     }
-            // }
-
             break;
         }
 
@@ -527,46 +408,6 @@ void move_program(Filelist* flist)
 
                 }
             }
-
-
-            // for(int i = 0; i < 4; i++)
-            // {
-            //     for(int m = 3; m > 0; m--)
-            //     {
-            //         if(matrix[i][m] == 0)
-            //         {
-            //             continue;
-            //         }
-            //         for(int j = m + 1; j > 0; j--)
-            //         {
-            //             int next = -1;
-            //             for(int k = j-1; k >= 0; k--)
-            //             {
-            //                 if(matrix[i][k] != 0)
-            //                 {
-            //                     next = k;
-            //                     break;
-            //                 }
-            //             }
-            //             if(next != -1)
-            //             {
-            //                 if(matrix[i][m]==0)
-            //                 {
-            //                     matrix[i][m] = matrix[i][next];
-            //                     matrix[i][next] = 0;
-            //                 }else if(matrix[i][j] == matrix[i][next]){
-            //                     game_score += matrix[i][j];
-            //                     matrix[i][m] = matrix[i][j] * 2;
-            //                     matrix[i][j] = 0;
-            //                     matrix[i][next] = 0;
-            //                 }
-            //             }else{
-            //                 break;
-            //             }
-
-            //         }
-            //     }
-            // }
 
         }
         break;
@@ -703,7 +544,6 @@ int judge_NotMove()
 {
     int judge = 1;
     int num = matrixEmptyNum();
-    //printf("num = %d\n",num);
     if(num == 0)
     {
         for(int i = 0; i < 4; i++)
