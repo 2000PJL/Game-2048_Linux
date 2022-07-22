@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-15 20:37:56
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-22 15:35:28
+ * @LastEditTime: 2022-07-22 19:25:02
  * @Description: 游戏主体逻辑
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 
@@ -13,7 +13,7 @@
 #include<unistd.h>
 #include<time.h>
 #include<string.h>
-#include <sys/wait.h>
+#include <wait.h>
 
 #include"lcd.h"
 #include"displaytext.h"
