@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-14 11:14:48
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-22 15:33:45
+ * @LastEditTime: 2022-07-23 10:12:36
  * @Description: 本文件是2048游戏的主文件，
  * 在该文件中实现2048这款游戏的主要控制逻辑
  * 
@@ -64,9 +64,9 @@ int main()
     }
 
     lcd_open();
-    mainpage_init(image_flist);
+    mainpage_init(image_flist); //主界面初始化
     
-       
+    //创建屏幕触控监听线程
     int ret_t = pthread_create(&th_listen_touch,NULL,listen_touch_thread,NULL); 
     if(ret_t != 0)
     {
@@ -74,7 +74,7 @@ int main()
         exit(1);
     }
 
-
+    //创建游戏主逻辑线程
     ret_t = pthread_create(&th_main,NULL,game_logic_thread,image_flist);
     if(ret_t != 0)
     {
@@ -82,6 +82,7 @@ int main()
         exit(1);
     }
 
+    //创建背景音乐线程
     ret_t = pthread_create(&th_mp3,NULL,mp3_play_thread,mp3_flist);
     if(ret_t != 0)
     {
@@ -89,8 +90,12 @@ int main()
         exit(1);
     }
     
+    //线程阻塞，等待游戏主逻辑线程的结束
     pthread_join(th_main,NULL);
+    
+    //杀死背景音乐线程开启的madplay音乐播放进程
     system("killall madplay");
+
     lcd_close();
 
     return 0;

@@ -11,7 +11,7 @@ INC := -I ../inc
 INC += 
 
 # 依赖的库的路径及依赖库
-LIBS := -L ../libs  -l jpeg -l pthread
+LIBS := -L ../libs  -l jpeg -l pthread -l m
 
 
 #项目所有的.c文件列表

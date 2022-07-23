@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-15 20:37:56
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-22 19:25:02
+ * @LastEditTime: 2022-07-23 16:38:27
  * @Description: 游戏主体逻辑
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 
@@ -13,7 +13,8 @@
 #include<unistd.h>
 #include<time.h>
 #include<string.h>
-#include <wait.h>
+#include <sys/wait.h>
+#include <math.h>
 
 #include"lcd.h"
 #include"displaytext.h"
@@ -29,6 +30,9 @@ int touch_event = 0;
 Touch_point my_touch_point;
 int mode = 0;
 int game_score = 0;
+
+int matrix_change_flag = 0; //方块产生判断标志
+int Invalid_operation_num = 0;
 
 int matrix[4][4] = {0};
 int matrix_view[4][4] = {0};
@@ -125,7 +129,14 @@ void *game_logic_thread(void *arg)
 
             default:
                 move_program(image_flsit);
-                random_program();
+                
+                if(matrix_change_flag == 1)
+                {
+                    random_program();
+                }else{
+                    Invalid_operation_num++;
+                }
+                
                 refresh_view(image_flsit);
                 gameIsWin(image_flsit);
                 break;
@@ -134,6 +145,8 @@ void *game_logic_thread(void *arg)
 
     }
 }
+
+
 
 
 /**
@@ -251,6 +264,7 @@ void touch_program(Filelist *image_flist)
  */
 void move_program(Filelist* flist)
 {
+    matrix_change_flag = 0;
     for(int i = 0; i < 4; i++)
     {
         for(int j = 0; j < 4; j++)
@@ -276,13 +290,13 @@ void move_program(Filelist* flist)
                     int next = -1;
                     for(int k = j+1; k < 4 ; k++)
                     {
-                        if(matrix[k][i] != 0)
+                        if(matrix[k][i] != 0)   //寻找第一个非零元素，并将其列坐标传给next
                         {
-                            next = k;
+                            next = k;  
                             break;
                         }
                     }
-                    if(next != -1)
+                    if(next != -1)        //如果找到非零元素就执行元素合并代码
                     {
                         if(matrix[j][i]==0)
                         {
@@ -292,6 +306,7 @@ void move_program(Filelist* flist)
                             game_score += matrix[j][i];
                             matrix[j][i] *= 2;
                             matrix[next][i] = 0;
+                            matrix_change_flag = 1;
                         }
                     }else{
                         break;
@@ -329,6 +344,7 @@ void move_program(Filelist* flist)
                             game_score += matrix[j][i];
                             matrix[j][i] *= 2;
                             matrix[next][i] = 0;
+                            matrix_change_flag = 1;
                         }
                     }else{
                         break;
@@ -365,6 +381,7 @@ void move_program(Filelist* flist)
                             game_score += matrix[i][j];
                             matrix[i][j] *= 2;
                             matrix[i][next] = 0;
+                            matrix_change_flag = 1;
                         }
                     }else{
                         break;
@@ -401,6 +418,7 @@ void move_program(Filelist* flist)
                             game_score += matrix[i][j];
                             matrix[i][j] *= 2;
                             matrix[i][next] = 0;
+                            matrix_change_flag = 1;
                         }
                     }else{
                         break;
@@ -435,7 +453,7 @@ void random_program()
         int y = rand()%4;
         if(matrix[y][x] == 0)
         {
-            matrix[y][x] = 2;
+            matrix[y][x] = (int)pow(2, (rand()%3)+1);
         }else{
             number++;
         }
@@ -485,11 +503,16 @@ void refresh_view(Filelist* flist)
                 matrix_view[i][j] = matrix[i][j];
                 sprintf(name,"num_%d.jpg",matrix[i][j]);
                 display_jpg(flist_findfile(flist,name),10 + j*110, 10 + i*110);
+                Invalid_operation_num = 0;
             }
         }
     }
     lcd_draw_rectangle(480,160,300,100,0xffffff);
     display_int(game_score,550,180);
+    if(Invalid_operation_num == 5)
+    {
+        game_over(flist);
+    }
 }
 
 /**
