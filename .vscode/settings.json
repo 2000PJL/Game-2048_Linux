@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        "displaytext.h": "c",
+        "typeinfo": "c",
+        "lcdtouch.h": "c",
+        "game_logic.h": "c",
+        "bmp.h": "c",
+        "stdlib.h": "c",
+        "string.h": "c",
+        "stdio.h": "c",
+        "time.h": "c",
+        "filelist.h": "c",
+        "lcd.h": "c",
+        "unistd.h": "c",
+        "wait.h": "c",
+        "types.h": "c",
+        "stat.h": "c",
+        "crtdefs.h": "c"
+    }
+}
