@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-15 09:39:35
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-16 15:28:11
+ * @LastEditTime: 2022-08-11 16:43:39
  * @Description: 
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 
@@ -238,10 +238,10 @@ char score[3][185] = {
  * @param {int} y0: 字符word左上角的y轴坐标
  * @param {int} width: 字符的宽度
  * @param {int} height: 字符的高度
- * @param {char} pa: 显示字符的属性 0:不遮盖背景，1:遮盖背景
+ * @param {char} mode: 显示字符的属性 0:不遮盖背景，1:遮盖背景
  * @return {*} 无返回值
  */
-void display_text(const char word[], int x0, int y0, int width, int height, char pa)
+void display_text(const char word[], int x0, int y0, int width, int height, char mode)
 {
     int dot, x , y;
     
@@ -259,7 +259,7 @@ void display_text(const char word[], int x0, int y0, int width, int height, char
         {
             lcd_draw_point(x,y,0x000000);
         }else{
-            if(pa == 1)
+            if(mode == 1)
             {
                 lcd_draw_point(x,y,0xffffff);
             }

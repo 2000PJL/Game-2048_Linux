@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-15 09:33:34
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-16 15:25:27
+ * @LastEditTime: 2022-08-11 17:26:32
  * @Description: 在LCD屏幕上通过点阵字库方式
  * 显示需要显示的文字
  * 
@@ -23,7 +23,7 @@
  * @param {int} height: 字符的高度
  * @return {*} 无返回值
  */
-void display_text(const char word[], int x0, int y0, int width, int height, char pa);
+void display_text(const char word[], int x0, int y0, int width, int height, char mode);
 
 
 /**
@@ -58,7 +58,6 @@ void display_double(double num, int x0, int y0);
  * @return {*}
  */
 void display_score(int x0, int y0);
-
 
 
 #endif
