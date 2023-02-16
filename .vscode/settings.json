@@ -15,6 +15,7 @@
         "wait.h": "c",
         "types.h": "c",
         "stat.h": "c",
-        "crtdefs.h": "c"
+        "crtdefs.h": "c",
+        "math.h": "c"
     }
 }
