@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-14 19:32:52
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-21 15:28:32
+ * @LastEditTime: 2022-10-13 17:21:03
  * @Description: 文件双向链表，用来保存资源文件的名字
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 
@@ -213,7 +213,7 @@ Filenode *flist_prenode(Filelist* flist, Filenode* fnode)
 /**
  * @Author: PengJL
  * @Description: 从文件链表flist中查找
- * 文件name的的完整文件名
+ * 文件name的完整文件名
  * @param {Filelist} *flist: 文件链表的指针
  * @param {char} *name: 需要查找的文件名
  * @return {char *}

@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-14 08:56:12
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-18 21:36:54
+ * @LastEditTime: 2023-02-07 18:31:43
  * @Description: 
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 
@@ -172,7 +172,7 @@ move_dir get_move_dir(void)
  *              4: 右
  *              5: 触摸        
  */
-int get_touch(Touch_point *pot)
+int get_touch(volatile Touch_point *pot)
 {
     int touch_fd = open("/dev/input/event0",O_RDONLY);
     if(touch_fd == -1)

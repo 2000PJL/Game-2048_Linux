@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-14 16:18:30
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-14 19:28:34
+ * @LastEditTime: 2023-02-07 18:43:07
  * @Description: 800*480LCD屏幕的基本控制函数实现
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 

@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-15 20:37:56
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-23 17:01:16
+ * @LastEditTime: 2023-02-16 11:19:13
  * @Description: 游戏主体逻辑
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 
@@ -15,6 +15,8 @@
 #include<string.h>
 #include <sys/wait.h>
 #include <math.h>
+#include<fcntl.h>
+
 
 #include"lcd.h"
 #include"displaytext.h"
@@ -27,7 +29,7 @@
 
 
 int touch_event = 0;
-Touch_point my_touch_point;
+volatile Touch_point my_touch_point;
 int mode = 0;
 int game_score = 0;
 
@@ -37,14 +39,22 @@ int Invalid_operation_num = 0;
 int matrix[4][4] = {0};
 int matrix_view[4][4] = {0};
 
+/**
+ * @Author: PengJL
+ * @Description: 游戏主界面绘制
+ * @param {Filelist} *image_flist: 存放图片的文件链表指针
+ * @return {*}
+ */
 void mainpage_init(Filelist *image_flist)
 {
     display_jpg(flist_findfile(image_flist,"backgroud.jpg"),0,0);
     display_jpg(flist_findfile(image_flist,"mainpage.jpg"),250,30); //300*300
     display_jpg(flist_findfile(image_flist,"copyright.jpg"),200,420); //400*40
-    display_jpg(flist_findfile(image_flist,"start_game.jpg"),70,350); //300*60
-    display_jpg(flist_findfile(image_flist,"stop_game.jpg"),430,350); //300*60
+    display_jpg(flist_findfile(image_flist,"start_game.jpg"),0,350); //300*60
+    display_jpg(flist_findfile(image_flist,"continue_game.jpg"),300,350); //300*60
+    display_jpg(flist_findfile(image_flist,"stop_game.jpg"),600,350); //300*60
 }
+
 
 void gamepage_init(Filelist *flist)
 {
@@ -91,7 +101,6 @@ void gamepage_init(Filelist *flist)
  */
 void *listen_touch_thread(void *arg)
 {
-
     for(;;)
     {
         touch_event = get_touch(&my_touch_point);
@@ -139,6 +148,7 @@ void *game_logic_thread(void *arg)
                 
                 refresh_view(image_flsit);
                 gameIsWin(image_flsit);
+                save_archive();
                 break;
         }
         touch_event = 0;
@@ -190,20 +200,24 @@ int get_button()
     int y = my_touch_point.y;
     if(mode == 0)
     {
-        if(x>70 && x<370 && y>350 && y<410)
+        if(x > 10 && x < 200 && y > 350 && y < 400)
         {
             return 1;
         }
-        if(x>430 && x<730 && y>350 && y<410)
+        if(x > 600 && x < 800 && y > 350 && y < 400)
         {
             return 0;
         }
+        if(x > 300 && x < 500 && y > 350 && y < 400)
+        {
+            return 2;
+        }
     }else{
-        if(x>480 && x<780 && y>320 && y<380)
+        if(x > 480 && x < 680 && y > 320 && y < 370)
         {
             return 1;
         }
-        if(x>480 && x<780 && y>400 && y<460)
+        if(x > 480 && x < 680 && y > 400 && y < 450)
         {
             return 0;
         }
@@ -228,14 +242,16 @@ void touch_program(Filelist *image_flist)
         if(key == 1)
         {
             gamepage_init(image_flist);
-
-
-
             mode = 1;
         }else if(key == 0)
         {
             display_jpg(flist_findfile(image_flist,"backgroud.jpg"),0,0);
             pthread_exit(NULL);
+        }else if(key == 2)
+        {
+            read_archive(image_flist);
+            refresh_view(image_flist);
+            mode = 1;
         }
     }else{
         if(key == 1)
@@ -281,157 +297,157 @@ void move_program(Filelist* flist)
 
     switch (touch_event)
     {
-    case 1: //上滑事件处理
-        {
-            for(int i = 0; i < 4; i++)
+        case MOVE_UP: //上滑事件处理
             {
-                for(int j = 0; j < 3; j++)
+                for(int i = 0; i < 4; i++)
                 {
-                    int next = -1;
-                    for(int k = j+1; k < 4 ; k++)
+                    for(int j = 0; j < 3; j++)
                     {
-                        if(matrix[k][i] != 0)   //寻找第一个非零元素，并将其列坐标传给next
+                        int next = -1;
+                        for(int k = j+1; k < 4 ; k++)
                         {
-                            next = k;  
+                            if(matrix[k][i] != 0)   //寻找第一个非零元素，并将其列坐标传给next
+                            {
+                                next = k;  
+                                break;
+                            }
+                        }
+                        if(next != -1)        //如果找到非零元素就执行元素合并代码
+                        {
+                            if(matrix[j][i]==0)
+                            {
+                                matrix[j][i] = matrix[next][i];
+                                matrix[next][i] = 0;
+                            }else if(matrix[j][i] == matrix[next][i]){
+                                game_score += matrix[j][i];
+                                matrix[j][i] *= 2;
+                                matrix[next][i] = 0;
+                                matrix_change_flag = 1;
+                            }
+                        }else{
                             break;
                         }
-                    }
-                    if(next != -1)        //如果找到非零元素就执行元素合并代码
-                    {
-                        if(matrix[j][i]==0)
-                        {
-                            matrix[j][i] = matrix[next][i];
-                            matrix[next][i] = 0;
-                        }else if(matrix[j][i] == matrix[next][i]){
-                            game_score += matrix[j][i];
-                            matrix[j][i] *= 2;
-                            matrix[next][i] = 0;
-                            matrix_change_flag = 1;
-                        }
-                    }else{
-                        break;
-                    }
 
-                    
-                }
-            }
-
-
-        }
-        break;
-    case 2: //下滑事件处理
-        {
-            for(int i = 0; i < 4; i++)
-            {
-                for(int j = 3; j > 0; j--)
-                {
-                    int next = -1;
-                    for(int k = j-1; k >= 0; k--)
-                    {
-                        if(matrix[k][i] != 0)
-                        {
-                            next = k;
-                            break;
-                        }
-                    }
-                    if(next != -1)
-                    {
-                        if(matrix[j][i]==0)
-                        {
-                            matrix[j][i] = matrix[next][i];
-                            matrix[next][i] = 0;
-                        }else if(matrix[j][i] == matrix[next][i]){
-                            game_score += matrix[j][i];
-                            matrix[j][i] *= 2;
-                            matrix[next][i] = 0;
-                            matrix_change_flag = 1;
-                        }
-                    }else{
-                        break;
-                    }
-
-                }
-            }
-
-        }
-        break;
-
-    case 3: //左滑事件处理
-        {
-            for(int i = 0; i < 4; i++)
-            {
-                for(int j = 0; j < 3; j++)
-                {
-                    int next = -1;
-                    for(int k = j+1; k < 4; k++)
-                    {
-                        if(matrix[i][k] != 0)
-                        {
-                            next = k;
-                            break;
-                        }
-                    }
-                    if(next != -1)
-                    {
-                        if(matrix[i][j]==0)
-                        {
-                            matrix[i][j] = matrix[i][next];
-                            matrix[i][next] = 0;
-                        }else if(matrix[i][j] == matrix[i][next]){
-                            game_score += matrix[i][j];
-                            matrix[i][j] *= 2;
-                            matrix[i][next] = 0;
-                            matrix_change_flag = 1;
-                        }
-                    }else{
-                        break;
+                        
                     }
                 }
+
+
             }
-
-
             break;
-        }
-
-    case 4: //右划事件处理
-    {
-            for(int i = 0; i < 4; i++)
+        case MOVE_DOWN: //下滑事件处理
             {
-                for(int j = 3; j > 0; j--)
+                for(int i = 0; i < 4; i++)
                 {
-                    int next = -1;
-                    for(int k = j-1; k >= 0; k--)
+                    for(int j = 3; j > 0; j--)
                     {
-                        if(matrix[i][k] != 0)
+                        int next = -1;
+                        for(int k = j-1; k >= 0; k--)
                         {
-                            next = k;
+                            if(matrix[k][i] != 0)
+                            {
+                                next = k;
+                                break;
+                            }
+                        }
+                        if(next != -1)
+                        {
+                            if(matrix[j][i]==0)
+                            {
+                                matrix[j][i] = matrix[next][i];
+                                matrix[next][i] = 0;
+                            }else if(matrix[j][i] == matrix[next][i]){
+                                game_score += matrix[j][i];
+                                matrix[j][i] *= 2;
+                                matrix[next][i] = 0;
+                                matrix_change_flag = 1;
+                            }
+                        }else{
+                            break;
+                        }
+
+                    }
+                }
+
+            }
+            break;
+
+        case MOVE_LEFT: //左滑事件处理
+            {
+                for(int i = 0; i < 4; i++)
+                {
+                    for(int j = 0; j < 3; j++)
+                    {
+                        int next = -1;
+                        for(int k = j+1; k < 4; k++)
+                        {
+                            if(matrix[i][k] != 0)
+                            {
+                                next = k;
+                                break;
+                            }
+                        }
+                        if(next != -1)
+                        {
+                            if(matrix[i][j]==0)
+                            {
+                                matrix[i][j] = matrix[i][next];
+                                matrix[i][next] = 0;
+                            }else if(matrix[i][j] == matrix[i][next]){
+                                game_score += matrix[i][j];
+                                matrix[i][j] *= 2;
+                                matrix[i][next] = 0;
+                                matrix_change_flag = 1;
+                            }
+                        }else{
                             break;
                         }
                     }
-                    if(next != -1)
-                    {
-                        if(matrix[i][j]==0)
-                        {
-                            matrix[i][j] = matrix[i][next];
-                            matrix[i][next] = 0;
-                        }else if(matrix[i][j] == matrix[i][next]){
-                            game_score += matrix[i][j];
-                            matrix[i][j] *= 2;
-                            matrix[i][next] = 0;
-                            matrix_change_flag = 1;
-                        }
-                    }else{
-                        break;
-                    }
-
                 }
+
+
+                break;
             }
 
-        }
-        break;
+        case MOVE_RIGHT: //右划事件处理
+        {
+                for(int i = 0; i < 4; i++)
+                {
+                    for(int j = 3; j > 0; j--)
+                    {
+                        int next = -1;
+                        for(int k = j-1; k >= 0; k--)
+                        {
+                            if(matrix[i][k] != 0)
+                            {
+                                next = k;
+                                break;
+                            }
+                        }
+                        if(next != -1)
+                        {
+                            if(matrix[i][j]==0)
+                            {
+                                matrix[i][j] = matrix[i][next];
+                                matrix[i][next] = 0;
+                            }else if(matrix[i][j] == matrix[i][next]){
+                                game_score += matrix[i][j];
+                                matrix[i][j] *= 2;
+                                matrix[i][next] = 0;
+                                matrix_change_flag = 1;
+                            }
+                        }else{
+                            break;
+                        }
 
-    default:
-        break;
+                    }
+                }
+
+            }
+            break;
+
+        default:
+            break;
     }
 }
 
@@ -604,6 +620,88 @@ int judge_NotMove()
     }
     return judge;
 }
+
+
+
+/**
+ * @Author: PengJL
+ * @Description: 保存游戏进度
+ * @return {null}
+ */
+void save_archive()
+{
+    int fd = open("game_archive.dat", O_RDWR | O_CREAT  , 0664);
+    for(int x = 0; x < 4; x++)
+    {
+        for(int y = 0; y < 4; y++)
+        {
+            int flag = write(fd, &(matrix[x][y]), 4);
+            if(flag == -1)
+            {
+                perror("save archive failed:");
+                break;
+            }else if(flag == 0)
+            {
+                break;
+            }
+        }
+    }
+    if(write(fd, &game_score, 4) != 4)
+    {
+        perror("write game_score archive failed:");
+    }
+    close(fd);
+}
+
+
+
+/**
+ * @Author: PengJL
+ * @Description: 读取游戏进度
+ * @param {Filelist} *image_flist: 存放图片的文件链表指针
+ * @return {null}
+ */
+void read_archive(Filelist *image_flist)
+{
+    display_jpg(flist_findfile(image_flist,"backgroud.jpg"),0,0);
+    lcd_draw_rectangle(0, 0, 460, 480, 0xBBADA2);
+    for(int i = 0; i < 4; i++)
+    {
+        for(int j = 0; j < 4; j++)
+        {
+            display_jpg(flist_findfile(image_flist,"num_0.jpg"),10 + j*110, 10 + i*110);
+        }
+    }
+    display_score(480,100);
+    lcd_draw_rectangle(480,160,300,100,0xffffff);
+    display_jpg(flist_findfile(image_flist,"start_game.jpg"),480,320); //300*60
+    display_jpg(flist_findfile(image_flist,"stop_game.jpg"),480,400); //300*60
+    
+
+    int fd = open("game_archive.dat", O_RDWR | O_CREAT  , 0664);
+    for(int x = 0; x < 4; x++)
+    {
+        for(int y = 0; y < 4; y++)
+        {
+            int flag = read(fd, &(matrix[x][y]), 4);
+            if(flag == -1)
+            {
+                perror("Read archive failed:");
+                break;
+            }else if(flag == 0)
+            {
+                break;
+            }
+        }
+    }
+    if(read(fd, &game_score, 4) != 4)
+    {
+        perror("Read game_score archive failed:");
+    }
+    display_int(game_score,550,180);
+    close(fd);
+}
+
 
 /**
  * @Author: PengJL

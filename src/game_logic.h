@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-15 20:36:04
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-23 17:01:22
+ * @LastEditTime: 2023-02-13 18:26:30
  * @Description: 2048游戏主体逻辑的相关函数声明
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 
@@ -138,5 +138,20 @@ int judge_NotMove();
 void gameIsWin(Filelist *flist);
 
 
+/**
+ * @Author: PengJL
+ * @Description: 读取游戏进度
+ * @param {Filelist} *image_flist: 存放图片的文件链表指针
+ * @return {null}
+ */
+void read_archive(Filelist *image_flist);
+
+
+/**
+ * @Author: PengJL
+ * @Description: 保存游戏进度
+ * @return {null}
+ */
+void save_archive();
 
 #endif

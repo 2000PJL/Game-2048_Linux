@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-14 08:55:20
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-16 18:35:32
+ * @LastEditTime: 2023-02-07 18:30:50
  * @Description: 
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 
@@ -49,6 +49,6 @@ move_dir get_move_dir(void);
  *              4: 右
  *              5: 触摸        
  */
-int get_touch(Touch_point *pot);
+int get_touch(volatile Touch_point *pot);
 
 #endif

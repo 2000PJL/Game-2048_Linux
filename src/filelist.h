@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-14 19:51:31
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-15 08:57:26
+ * @LastEditTime: 2022-10-22 21:46:56
  * @Description: 文件链表相关函数的声明
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 
@@ -15,7 +15,7 @@
 */
 typedef struct filenode
 {
-    char name[512];
+    char name[256];
     struct filenode* pre;
     struct filenode* next;  
 }Filenode;
