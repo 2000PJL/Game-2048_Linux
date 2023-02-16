@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-14 11:14:48
  * @LastEditors: PengJL 
- * @LastEditTime: 2022-07-23 10:12:36
+ * @LastEditTime: 2023-02-16 15:05:17
  * @Description: 本文件是2048游戏的主文件，
  * 在该文件中实现2048这款游戏的主要控制逻辑
  * 
@@ -40,7 +40,7 @@ int main()
     //创建jpg图片文件链表
     Filelist* image_flist = NULL;
     image_flist = create_flist();
-    int ret = findFile(image_flist,"../",".jpg");
+    int ret = findFile(image_flist,"./",".jpg");
 
     if(ret > 0)
     {
@@ -53,7 +53,7 @@ int main()
     //创建mp3音频文件链表
     Filelist* mp3_flist = NULL;
     mp3_flist = create_flist();
-    int ret1 = findFile(mp3_flist,"../",".mp3");
+    int ret1 = findFile(mp3_flist,"./",".mp3");
     
     if(ret1 > 0)
     {
