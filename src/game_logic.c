@@ -2,7 +2,7 @@
  * @Author: PengJL 
  * @Date: 2022-07-15 20:37:56
  * @LastEditors: PengJL 
- * @LastEditTime: 2023-02-16 11:19:13
+ * @LastEditTime: 2023-02-16 11:48:21
  * @Description: 游戏主体逻辑
  * 
  * Copyright (c) by PengJL, All Rights Reserved. 
@@ -137,6 +137,8 @@ void *game_logic_thread(void *arg)
                 break;
 
             default:
+            if(mode == 1)
+            {
                 move_program(image_flsit);
                 matrixIsChange();
                 if(matrix_change_flag == 1)
@@ -150,6 +152,7 @@ void *game_logic_thread(void *arg)
                 gameIsWin(image_flsit);
                 save_archive();
                 break;
+            }
         }
         touch_event = 0;
 
