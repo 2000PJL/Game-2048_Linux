@@ -8,7 +8,7 @@
 
 软件开发平台: VSCode for Linux, Ubuntu20.04
 
-硬件平台: 基于 S5P6818 ARM Contex-A53 CPU的Linux开发板
+硬件平台: 基于 S5P6818 ARM Cortex-A53 CPU的Linux开发板
 
 ## 目录结构:
 
